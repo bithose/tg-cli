@@ -50,6 +50,7 @@ tg-cli> dialogs 50
 tg-cli> send me "string"
 tg-cli> send "Exact Groupchat Title" "hello group"
 tg-cli> history @username 20
+tg-cli> callback @username 123 "callback:data"
 tg-cli> inbox
 inbox> :q
 tg-cli> open "Some Group Title"
@@ -81,6 +82,7 @@ bun run tg-cli dialogs
 bun run tg-cli send me "string i want to programmatically send to all of my devices"
 bun run tg-cli history @username 100
 bun run tg-cli --json history "Exact Groupchat Title" 1000
+bun run tg-cli --json callback @username 123 "callback:data"
 bun run tg-cli send @username "string i want to progammatically send to someone from my telegram"
 bun run tg-cli send "Exact Groupchat Title" "string i want to programmatically send to a groupchat from my telegram"
 bun run tg-cli inbox

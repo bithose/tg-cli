@@ -5,6 +5,7 @@ export type Command =
   | "dialogs"
   | "send"
   | "history"
+  | "callback"
   | "open"
   | "inbox"
   | "logout"

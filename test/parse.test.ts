@@ -31,4 +31,11 @@ describe("parseProcessArgs", () => {
       outputMode: "json",
     });
   });
+
+  test("keeps callback payloads intact for one-shot button clicks", () => {
+    expect(parseProcessArgs(["--json", "callback", "@bot", "123", "order:confirm:abc"])).toEqual({
+      args: ["callback", "@bot", "123", "order:confirm:abc"],
+      outputMode: "json",
+    });
+  });
 });

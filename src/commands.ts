@@ -118,6 +118,43 @@ export async function cmdHistory(
   }
 }
 
+export async function cmdCallback(
+  client: TelegramClient,
+  options: RuntimeOptions,
+  peer: string | undefined,
+  messageIdText: string | undefined,
+  dataParts: string[],
+): Promise<void> {
+  if (!peer || !messageIdText || dataParts.length === 0) {
+    throw new Error('Usage: callback <peer> <message-id> "callback-data"');
+  }
+  const messageId = Number(messageIdText);
+  if (!Number.isInteger(messageId) || messageId <= 0) {
+    throw new Error("message-id must be a positive integer");
+  }
+  const answer: any = await client.invoke(
+    new Api.messages.GetBotCallbackAnswer({
+      peer: await resolvePeer(client, peer),
+      msgId: messageId,
+      data: Buffer.from(dataParts.join(" ")),
+    }),
+  );
+  const record = {
+    ok: true,
+    message: answer.message ? String(answer.message) : undefined,
+    alert: Boolean(answer.alert),
+    url: answer.url ? String(answer.url) : undefined,
+    hasUrl: Boolean(answer.hasUrl),
+  };
+
+  if (shouldWriteJson(options.outputMode)) {
+    writeJson(record);
+    return;
+  }
+
+  console.log(record.message ?? "Callback answered.");
+}
+
 export async function cmdSend(
   client: TelegramClient,
   options: RuntimeOptions,
@@ -292,6 +329,7 @@ export function printHelp(): void {
   dialogs [limit]
   send <peer> "message"
   history <peer> [limit]
+  callback <peer> <message-id> "callback-data"
   open <peer>
   inbox
   logout
@@ -330,6 +368,9 @@ export async function runCommand(
       return "continue";
     case "history":
       await cmdHistory(client, options, args[0], args[1]);
+      return "continue";
+    case "callback":
+      await cmdCallback(client, options, args[0], args[1], args.slice(2));
       return "continue";
     case "open":
       return await openChat(client, options, args[0]);
